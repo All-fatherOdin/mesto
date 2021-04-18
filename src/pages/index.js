@@ -7,17 +7,21 @@ import PopupWithImage from '../scripts/components/PopupWithImage.js';
 import PopupWithForm from '../scripts/components/PopupWithForm.js';
 import UserInfo from '../scripts/components/UserInfo.js';
 import Api from '../scripts/components/Api.js';
-import popupDelCard from '../scripts/components/PopupDelCard.js'
+import PopupDelCard from '../scripts/components/PopupDelCard.js'
 import {classes, editProfileLayout, editProfileInputName, editProfileInputInfo, editProfileButton, 
    addCardsLayout, addCardsButton,avatarButton, avatarLayout} from '../scripts/utils/constants.js';
 
 let userId;
 
+
+
 const userInfo = new UserInfo({userNameSelector: '.profile__name',
                               userInfoSelector: '.profile__career', userAvatarSelector: '.profile__avatar'});
 
 const getInfoFromServer = new Api({baseUrl: 'https://mesto.nomoreparties.co/v1', cohortId: 'cohort-22', 
-                                 token: '3c946ec2-c7fc-48d8-9469-bc7da07a0d23'});
+                                 token: '3c946ec2-c7fc-48d8-9469-bc7da07a0d23', headers: {authorization: '3c946ec2-c7fc-48d8-9469-bc7da07a0d23',
+                                 'Content-Type': 'application/json'}
+                              });
 
 const cardsInit = new Section({
    renderer: (item) => {
@@ -26,7 +30,7 @@ const cardsInit = new Section({
    }, 
    '.elements__list');
 
-const delCardPopup = new popupDelCard('#del-card-popup', 
+const delCardPopup = new PopupDelCard('#del-card-popup', 
    (card, cardId) => {
       getInfoFromServer.makeRequestDeleteCard(cardId)
       .then(() =>{
@@ -129,7 +133,7 @@ avatarPopup.setEventListeners()
 Promise.all([getInfoFromServer.makeRequestGetInfo('users/me'), getInfoFromServer.makeRequestGetInfo('cards')])
    .then(([userInformation, cardsInformation]) => {
       userId = userInformation._id
-      userInfo.setUserInfo({name: userInformation.name, about: userInformation.about, avatar: userInformation.avatar})
+      userInfo.setUserInfo(userInformation)
       cardsInit.renderCards(cardsInformation)
    })
    .catch((err) => console.log(`Ответ не пришел ${err}`));

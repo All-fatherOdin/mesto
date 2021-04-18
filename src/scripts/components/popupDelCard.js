@@ -1,6 +1,6 @@
 import Popup from './Popup.js';
 
-export default class popupDelCard extends Popup{
+export default class PopupDelCard extends Popup{
    constructor(popupSelector, delCardFromServer){
       super(popupSelector);
       this._delCardFromServer = delCardFromServer;
@@ -23,7 +23,6 @@ export default class popupDelCard extends Popup{
 
    closePopup() {
       super.closePopup();
-      this._form.reset();
    }
 }
 

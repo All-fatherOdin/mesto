@@ -1,9 +1,6 @@
 export default class Api {
-   constructor({baseUrl, cohortId, token, headers}) {
-      this._cohortId = cohortId;
-      this._token = token;
-      this._baseUrl = baseUrl;
-      this._headers = headers;
+   constructor(infoForFetch) {
+      this._infoForFetch = infoForFetch;
    }
 
    _checkResponse(res) {
@@ -14,22 +11,18 @@ export default class Api {
    }
 
    makeRequestGetInfo(data) {
-      return fetch(`${this._baseUrl}/${this._cohortId}/${data}`, {
-         headers: {
-            authorization: this._token,
-            'Content-Type': 'application/json'
-         }
+      console.log(`${this._infoForFetch.baseUrl}/${this._infoForFetch.cohortId}/${data}`)
+      return fetch(`${this._infoForFetch.baseUrl}/${this._infoForFetch.cohortId}/${data}`, {
+         headers: this._infoForFetch.headers
       })
       .then(this._checkResponse)
    }
 
    makeRequestChangeProfile({userName, about}) {
-      return fetch(`${this._baseUrl}/${this._cohortId}/users/me`, {
+      console.log(this._infoForFetch.headers)
+      return fetch(`${this._infoForFetch.baseUrl}/${this._infoForFetch.cohortId}/users/me`, {
          method: 'PATCH',
-         headers: {
-            authorization: this._token,
-            'Content-Type': 'application/json'
-         },
+         headers: this._infoForFetch.headers,
          body: JSON.stringify({
             name: userName,
             about: about
@@ -39,12 +32,9 @@ export default class Api {
    }
 
    makeRequestAddPicture({pictureName, link}) {
-      return fetch(`${this._baseUrl}/${this._cohortId}/cards`, {
+      return fetch(`${this._infoForFetch.baseUrl}/${this._infoForFetch.cohortId}/cards`, {
          method: 'POST',
-         headers: {
-            authorization: this._token,
-            'Content-Type': 'application/json'
-         },
+         headers: this._infoForFetch.headers,
          body: JSON.stringify({
             name: pictureName,
             link: link
@@ -54,45 +44,33 @@ export default class Api {
    }
 
    makeRequestDeleteCard(id) {
-      return fetch(`${this._baseUrl}/${this._cohortId}/cards/${id}`, {
+      return fetch(`${this._infoForFetch.baseUrl}/${this._infoForFetch.cohortId}/cards/${id}`, {
          method: 'DELETE',
-         headers: {
-            authorization: this._token,
-            'Content-Type': 'application/json'
-         }
+         headers: this._infoForFetch.headers
       })
       .then(this._checkResponse)
    }
 
    makeRequestLike(id) {
-      return fetch(`${this._baseUrl}/${this._cohortId}/cards/likes/${id}`, {
+      return fetch(`${this._infoForFetch.baseUrl}/${this._infoForFetch.cohortId}/cards/likes/${id}`, {
          method: 'PUT',
-         headers: {
-            authorization: this._token,
-            'Content-Type': 'application/json'
-         }
+         headers: this._infoForFetch.headers
       })
       .then(this._checkResponse)
    }
 
    makeRequestDeleteLike(id) {
-      return fetch(`${this._baseUrl}/${this._cohortId}/cards/likes/${id}`, {
+      return fetch(`${this._infoForFetch.baseUrl}/${this._infoForFetch.cohortId}/cards/likes/${id}`, {
          method: 'DELETE',
-         headers: {
-            authorization: this._token,
-            'Content-Type': 'application/json'
-         }
+         headers: this._infoForFetch.headers
       })
       .then(this._checkResponse)
    }
 
    makeRequestChangeAvatar(avatar) {
-      return fetch(`${this._baseUrl}/${this._cohortId}/users/me/avatar`, {
+      return fetch(`${this._infoForFetch.baseUrl}/${this._infoForFetch.cohortId}/users/me/avatar`, {
          method: 'PATCH',
-         headers: {
-            authorization: this._token,
-            'Content-Type': 'application/json'
-         },
+         headers:this._infoForFetch.headers,
          body: JSON.stringify({
             avatar
          })
