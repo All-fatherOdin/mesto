@@ -1,23 +1,33 @@
 export default class Api {
-   constructor({cohortId, token}) {
+   constructor({baseUrl, cohortId, token, headers}) {
       this._cohortId = cohortId;
       this._token = token;
+      this._baseUrl = baseUrl;
+      this._headers = headers;
+   }
+
+   _checkResponse(res) {
+         if (res.ok) {
+            return res.json();
+         }
+         return Promise.reject(`Ошибка ${res.status}`);
    }
 
    makeRequestGetInfo(data) {
-      return fetch(`https://mesto.nomoreparties.co/v1/${this._cohortId}/${data}`, {
+      return fetch(`${this._baseUrl}/${this._cohortId}/${data}`, {
          headers: {
-            authorization: `${this._token}`
+            authorization: this._token,
+            'Content-Type': 'application/json'
          }
       })
-         .then(res => res.json())
+      .then(this._checkResponse)
    }
 
-   makeRequestChangeProfile({userName, about}){
-      return fetch(`https://mesto.nomoreparties.co/v1/${this._cohortId}/users/me`, {
+   makeRequestChangeProfile({userName, about}) {
+      return fetch(`${this._baseUrl}/${this._cohortId}/users/me`, {
          method: 'PATCH',
          headers: {
-            authorization: `${this._token}`,
+            authorization: this._token,
             'Content-Type': 'application/json'
          },
          body: JSON.stringify({
@@ -25,14 +35,14 @@ export default class Api {
             about: about
          })
       })
-         .then(res => res.json())
+      .then(this._checkResponse)
    }
 
-   makeRequestAddPicture({pictureName, link}){
-      return fetch(`https://mesto.nomoreparties.co/v1/${this._cohortId}/cards`, {
+   makeRequestAddPicture({pictureName, link}) {
+      return fetch(`${this._baseUrl}/${this._cohortId}/cards`, {
          method: 'POST',
          headers: {
-            authorization: `${this._token}`,
+            authorization: this._token,
             'Content-Type': 'application/json'
          },
          body: JSON.stringify({
@@ -40,51 +50,54 @@ export default class Api {
             link: link
          })
       })
-         .then(res => res.json())
+      .then(this._checkResponse)
    }
 
-   makeRequestDeleteCard(id){
-      return fetch(`https://mesto.nomoreparties.co/v1/${this._cohortId}/cards/${id}`, {
+   makeRequestDeleteCard(id) {
+      return fetch(`${this._baseUrl}/${this._cohortId}/cards/${id}`, {
          method: 'DELETE',
          headers: {
-            authorization: `${this._token}`,
+            authorization: this._token,
+            'Content-Type': 'application/json'
          }
       })
-         .then(res => res.json())
+      .then(this._checkResponse)
    }
 
-   makeRequestLike(id){
-      return fetch(`https://mesto.nomoreparties.co/v1/${this._cohortId}/cards/likes/${id}`, {
+   makeRequestLike(id) {
+      return fetch(`${this._baseUrl}/${this._cohortId}/cards/likes/${id}`, {
          method: 'PUT',
          headers: {
-            authorization: `${this._token}`,
+            authorization: this._token,
+            'Content-Type': 'application/json'
          }
       })
-         .then(res => res.json())
+      .then(this._checkResponse)
    }
 
-   makeRequestDeleteLike(id){
-      return fetch(`https://mesto.nomoreparties.co/v1/${this._cohortId}/cards/likes/${id}`, {
+   makeRequestDeleteLike(id) {
+      return fetch(`${this._baseUrl}/${this._cohortId}/cards/likes/${id}`, {
          method: 'DELETE',
          headers: {
-            authorization: `${this._token}`,
+            authorization: this._token,
+            'Content-Type': 'application/json'
          }
       })
-         .then(res => res.json())
+      .then(this._checkResponse)
    }
 
-   makeRequestChangeAvatar(avatar){
-      return fetch(`https://mesto.nomoreparties.co/v1/${this._cohortId}/users/me/avatar`, {
+   makeRequestChangeAvatar(avatar) {
+      return fetch(`${this._baseUrl}/${this._cohortId}/users/me/avatar`, {
          method: 'PATCH',
          headers: {
-            authorization: `${this._token}`,
+            authorization: this._token,
             'Content-Type': 'application/json'
          },
          body: JSON.stringify({
             avatar
          })
       })
-         .then(res => res.json())
+      .then(this._checkResponse)
    }
 
 }

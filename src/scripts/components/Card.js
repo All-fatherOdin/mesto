@@ -1,10 +1,11 @@
 
 export class Card {
-   constructor(data, cardSelector, handleCardClick, handleCardDelete, handelLike, handleDeleteLike) {
+   constructor({data, userId, cardSelector, handleCardClick, handleCardDelete, handelLike, handleDeleteLike}) {
       this._title = data.name;
       this._image = data.link;
       this._likeCount = data.likes;
-      this._userId = data.owner._id;
+      this._usersId = data.owner._id;
+      this._userId = userId;
       this._imgId = data._id;
       this._cardSelector = cardSelector;
       this._handleCardClick = handleCardClick;
@@ -21,14 +22,14 @@ export class Card {
    }
 
    _isUserId(){
-      if(this._userId === "96fd0b029537042527438a03"){
+      if(this._usersId === this._userId){
          this._trashCan.classList.remove('element__trash-can_disabled')
       }
    }
 
    _isUserLike(){
       this._likeCount.forEach(item => {
-         if(item._id === "96fd0b029537042527438a03"){
+         if(item._id === this._userId){
             this.like();
          }
       })

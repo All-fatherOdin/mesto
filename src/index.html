@@ -45,7 +45,7 @@
          <fieldset class="popup__text-container">
             <input id="name-input" type="text" name="user-name" class="popup__text" minlength="2" maxlength="40" required>
             <span class="name-input-error popup__text-error">Вы пропустили это поле.</span>
-            <input id="career-input" type="text" name="user-career" class="popup__text" minlength="2" maxlength="200" required>
+            <input id="career-input" type="text" name="user-about" class="popup__text" minlength="2" maxlength="200" required>
             <span class="career-input-error popup__text-error">Вы пропустили это поле.</span>
          </fieldset>
          <button type="submit" class="popup__save-button">Сохранить</button>
@@ -78,7 +78,7 @@
    <div class="layout" id="del-card-popup">
       <form name="del-card-form" class="popup" novalidate>
          <h2 class="popup__title">Вы уверены?</h2>
-         <button type="button" class="popup__save-button">Да</button>
+         <button type="submit" class="popup__save-button">Да</button>
          <button type="button" class="del-button"></button>
       </form>     
    </div>
@@ -87,7 +87,7 @@
       <form name="user-gallery" class="popup" novalidate>
          <h2 class="popup__title">Обновить аватар</h2>
          <fieldset class="popup__text-container">
-            <input id="pic-url-input" type="url" name="img-location" placeholder="Ссылка на картинку" class="popup__text popup__text_placeholder-disable" required>
+            <input id="pic-url-input" type="url" name="img-link" placeholder="Ссылка на картинку" class="popup__text popup__text_placeholder-disable" required>
             <span class="pic-url-input-error popup__text-error">Вы пропустили это поле.</span>
          </fieldset>
          <button type="submit" class="popup__save-button popup__save-button_inactive" disabled>Сохранить</button>

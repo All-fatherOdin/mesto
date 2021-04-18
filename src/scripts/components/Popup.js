@@ -1,8 +1,9 @@
 export default class Popup {
    constructor(popupSelector){
       this._popup = document.querySelector(popupSelector);
-      this._saveButton = this._popup.querySelector('.popup__save-button')
+      this._saveButton = this._popup.querySelector('.popup__save-button');
       this._closePopupEsc = this._closePopupEsc.bind(this);
+      this._form = this._popup.querySelector('.popup');
    }
 
    openPopup(){
@@ -33,10 +34,14 @@ export default class Popup {
    }
 
    startLoading(){
-      this._saveButtonText = this._saveButton.textContent
-      this._saveButton.textContent = 'Сохранение...'
+      if (this._saveButton) {
+         this._saveButtonText = this._saveButton.textContent
+         this._saveButton.textContent = 'Сохранение...'
+      }
    }
    endLoading(){
-      this._saveButton.textContent = this._saveButtonText
+      if (this._saveButton) {
+         this._saveButton.textContent = this._saveButtonText 
+      }
    }
 }

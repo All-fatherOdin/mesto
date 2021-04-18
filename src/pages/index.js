@@ -1,26 +1,29 @@
 import ('../pages/index.css');
 
-import {Card} from './components/Card.js';
-import {FormValidator} from './components/FormValidator.js';
-import Section from './components/Section.js';
-import PopupWithImage from './components/PopupWithImage.js';
-import PopupWithForm from './components/PopupWithForm.js';
-import UserInfo from './components/UserInfo.js';
-import Api from './components/Api.js';
-import popupDelCard from './components/popupDelCard.js'
+import {Card} from '../scripts/components/Card.js';
+import {FormValidator} from '../scripts/components/FormValidator.js';
+import Section from '../scripts/components/Section.js';
+import PopupWithImage from '../scripts/components/PopupWithImage.js';
+import PopupWithForm from '../scripts/components/PopupWithForm.js';
+import UserInfo from '../scripts/components/UserInfo.js';
+import Api from '../scripts/components/Api.js';
+import popupDelCard from '../scripts/components/PopupDelCard.js'
 import {classes, editProfileLayout, editProfileInputName, editProfileInputInfo, editProfileButton, 
-   addCardsLayout, addCardsButton, profileAvatar, avatarButton, avatarLayout, avatar} from './utils/constants.js';
+   addCardsLayout, addCardsButton,avatarButton, avatarLayout} from '../scripts/utils/constants.js';
+
+let userId;
 
 const userInfo = new UserInfo({userNameSelector: '.profile__name',
-                              userInfoSelector: '.profile__career'});
+                              userInfoSelector: '.profile__career', userAvatarSelector: '.profile__avatar'});
 
-const getInfoFromServer = new Api({cohortId: 'cohort-22', 
+const getInfoFromServer = new Api({baseUrl: 'https://mesto.nomoreparties.co/v1', cohortId: 'cohort-22', 
                                  token: '3c946ec2-c7fc-48d8-9469-bc7da07a0d23'});
 
 const cardsInit = new Section({
    renderer: (item) => {
-               return createCard(item);}
-               }, 
+               return createCard(item);
+            }
+   }, 
    '.elements__list');
 
 const delCardPopup = new popupDelCard('#del-card-popup', 
@@ -34,40 +37,40 @@ const delCardPopup = new popupDelCard('#del-card-popup',
    })
 delCardPopup.setEventListeners();
 
-
 const createCard = (argument) => {
-   const card = new Card(argument, '.template-gallery', 
-                        () => {
+   const card = new Card({data: argument, userId: userId, cardSelector: '.template-gallery', 
+      handleCardClick: () => {
                            imgPopup.openPopup(argument.link, argument.name);
                         },
-                        () => {
+      handleCardDelete: () => {
                            delCardPopup.openPopup(card, card.getId());
                         },
-                        (likeCounter) => {
-                           getInfoFromServer.makeRequestLike(argument._id)
-                              .then(card => {
-                                 likeCounter.textContent = card.likes.length;
-                              })
-                        },
-                        (likeCounter) => {
-                           likeCounter.textContent -= 1;
+      handelLike: (likeCounter) => {
+                     getInfoFromServer.makeRequestLike(argument._id)
+                        .then(card => {
+                           likeCounter.textContent = card.likes.length;
+                        })
+                        .catch((err) => console.log(`Ответ лайка не пришел ${err}`));
+                  },
+      handleDeleteLike: (likeCounter) => {
                            getInfoFromServer.makeRequestDeleteLike(argument._id)
                               .then(card => {
                                  likeCounter.textContent = card.likes.length;
                               })
-})
-   const cardElement = card.generateCard();
+                              .catch((err) => console.log(`Ответ удаления лайка не пришел ${err}`));
+                        }
+      })
+   const cardElement= card.generateCard();
    return cardElement;
 }
-
 
 const newCardPopup = new PopupWithForm('#gallery-popup',
                                        (inputsValues) => {
                                           const promise = new Promise(resolve => {
                                              newCardPopup.startLoading();
                                              getInfoFromServer.makeRequestAddPicture({
-                                             pictureName: inputsValues.name,
-                                             link: inputsValues.link}).then(resolve)
+                                             pictureName: inputsValues['img-name'],
+                                             link: inputsValues['img-location']}).then(resolve)
                                           })
                                           promise.then(data => {
                                              cardsInit.addItem(createCard(data));
@@ -86,12 +89,12 @@ const profilePopup = new PopupWithForm('#profile-popup',
                                           const promise = new Promise(resolve => {
                                              profilePopup.startLoading();
                                              getInfoFromServer.makeRequestChangeProfile({
-                                             userName: inputsValues.name, about: inputsValues.about})
+                                             userName: inputsValues['user-name'], about: inputsValues['user-about']})
                                                 .then(resolve);
                                           })
                                           promise.then(info => {
                                              userInfo.setUserInfo({name: info.name,
-                                                                  about: info.about})
+                                                about: info.about, avatar: info.avatar})
                                              })
                                              .then(() => {
                                                 profilePopup.closePopup();
@@ -109,13 +112,12 @@ const avatarPopup = new PopupWithForm('#avatar-popup',
                                        (inputValue) => {
                                           const promise = new Promise(resolve => {
                                              avatarPopup.startLoading();
-                                             getInfoFromServer.makeRequestChangeAvatar(inputValue.link)
+                                             getInfoFromServer.makeRequestChangeAvatar(inputValue['img-link'])
                                              .then(resolve)
                                           })
-                                             promise.then(ava => {
-                                                avatar.src = ava.avatar;
-                                             })
-                                             .then(() => {
+                                             promise.then((info) => {
+                                                userInfo.setUserInfo({name: info.name,
+                                                   about: info.about, avatar: info.avatar})
                                                 avatarPopup.closePopup();
                                                 avatarPopup.endLoading();
                                              })
@@ -124,18 +126,13 @@ const avatarPopup = new PopupWithForm('#avatar-popup',
 });
 avatarPopup.setEventListeners()
 
-getInfoFromServer.makeRequestGetInfo('cards')
-   .then(cards => { 
-      cardsInit.renderCards(cards);
+Promise.all([getInfoFromServer.makeRequestGetInfo('users/me'), getInfoFromServer.makeRequestGetInfo('cards')])
+   .then(([userInformation, cardsInformation]) => {
+      userId = userInformation._id
+      userInfo.setUserInfo({name: userInformation.name, about: userInformation.about, avatar: userInformation.avatar})
+      cardsInit.renderCards(cardsInformation)
    })
-   .catch(() => console.log(`Ответ карточек не пришел ${err}`));
-
-getInfoFromServer.makeRequestGetInfo('users/me')
-   .then(info => {
-      userInfo.setUserInfo({name: info.name, about: info.about})
-      profileAvatar.src = info.avatar;
-   })
-   .catch(() => console.log(`Ответ профиля не пришел ${err}`));
+   .catch((err) => console.log(`Ответ не пришел ${err}`));
 
 const cardsFormValidate = new FormValidator(classes, addCardsLayout);
 cardsFormValidate.enableValidation()

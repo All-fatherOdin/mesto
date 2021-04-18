@@ -9,7 +9,8 @@ export default class popupDelCard extends Popup{
 
    setEventListeners(){
       super.setEventListeners();
-      this._saveButton.addEventListener('click', () => {
+      this._form.addEventListener('submit', (evt) => {
+         evt.preventDefault();
          this._delCardFromServer(this._card, this._cardId)
       })
    }
@@ -18,6 +19,11 @@ export default class popupDelCard extends Popup{
       super.openPopup();
       this._card = card;
       this._cardId = cardId;
+   }
+
+   closePopup() {
+      super.closePopup();
+      this._form.reset();
    }
 }
 

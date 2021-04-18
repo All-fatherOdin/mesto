@@ -10,22 +10,15 @@ export default class PopupWithForm extends Popup{
    _getInputValues() {
       this._formValues = {};
       this._inputs.forEach((input) => {
-         if(input.name.includes('name')){
-            this._formValues["name"] = input.value;
-         } else if(input.name.includes('location')){
-            this._formValues["link"] = input.value;
-         } else {
-            this._formValues["about"] = input.value;
-         }
+         this._formValues[input.name] = input.value
       });
+      console.log(this._formValues)
       return this._formValues;
    }
 
    setEventListeners() {
       super.setEventListeners();
-      this._popup
-      .querySelector('.popup__save-button')
-      .addEventListener('click', (evt) => {
+      this._form.addEventListener('submit', (evt) => {
          evt.preventDefault();
          this._submitForm(this._getInputValues());
       })
@@ -33,8 +26,6 @@ export default class PopupWithForm extends Popup{
 
    closePopup() {
       super.closePopup();
-      this._inputs.forEach((item) => {
-         item.value = '';
-      })
+      this._form.reset();
    }
 }
