@@ -1,28 +1,29 @@
 export default class Api {
    constructor(infoForFetch) {
-      this._infoForFetch = infoForFetch;
+      this._baseUrl = infoForFetch.baseUrl;
+      this._cohortId = infoForFetch.cohortId;
+      this._headers = infoForFetch.headers;
    }
 
    _checkResponse(res) {
-         if (res.ok) {
-            return res.json();
-         }
-         return Promise.reject(`Ошибка ${res.status}`);
+      if (res.ok) {
+         return res.json();
+      }
+      return Promise.reject(`Ошибка ${res.status}`);
    }
 
-   makeRequestGetInfo(data) {
-      console.log(`${this._infoForFetch.baseUrl}/${this._infoForFetch.cohortId}/${data}`)
-      return fetch(`${this._infoForFetch.baseUrl}/${this._infoForFetch.cohortId}/${data}`, {
-         headers: this._infoForFetch.headers
+   getInfo(data) {
+      console.log(`${this._baseUrl}/${this._cohortId}/${data}`)
+      return fetch(`${this._baseUrl}/${this._cohortId}/${data}`, {
+         headers: this._headers
       })
       .then(this._checkResponse)
    }
 
-   makeRequestChangeProfile({userName, about}) {
-      console.log(this._infoForFetch.headers)
-      return fetch(`${this._infoForFetch.baseUrl}/${this._infoForFetch.cohortId}/users/me`, {
+   changeProfile({userName, about}) {
+      return fetch(`${this._baseUrl}/${this._cohortId}/users/me`, {
          method: 'PATCH',
-         headers: this._infoForFetch.headers,
+         headers: this._headers,
          body: JSON.stringify({
             name: userName,
             about: about
@@ -31,10 +32,10 @@ export default class Api {
       .then(this._checkResponse)
    }
 
-   makeRequestAddPicture({pictureName, link}) {
-      return fetch(`${this._infoForFetch.baseUrl}/${this._infoForFetch.cohortId}/cards`, {
+   addPicture({pictureName, link}) {
+      return fetch(`${this._baseUrl}/${this._cohortId}/cards`, {
          method: 'POST',
-         headers: this._infoForFetch.headers,
+         headers: this._headers,
          body: JSON.stringify({
             name: pictureName,
             link: link
@@ -43,40 +44,39 @@ export default class Api {
       .then(this._checkResponse)
    }
 
-   makeRequestDeleteCard(id) {
-      return fetch(`${this._infoForFetch.baseUrl}/${this._infoForFetch.cohortId}/cards/${id}`, {
+   deleteCard(id) {
+      return fetch(`${this._baseUrl}/${this._cohortId}/cards/${id}`, {
          method: 'DELETE',
-         headers: this._infoForFetch.headers
+         headers: this._headers
       })
       .then(this._checkResponse)
    }
 
-   makeRequestLike(id) {
-      return fetch(`${this._infoForFetch.baseUrl}/${this._infoForFetch.cohortId}/cards/likes/${id}`, {
+   setLike(id) {
+      return fetch(`${this._baseUrl}/${this._cohortId}/cards/likes/${id}`, {
          method: 'PUT',
-         headers: this._infoForFetch.headers
+         headers: this._headers
       })
       .then(this._checkResponse)
    }
 
-   makeRequestDeleteLike(id) {
-      return fetch(`${this._infoForFetch.baseUrl}/${this._infoForFetch.cohortId}/cards/likes/${id}`, {
+   deleteLike(id) {
+      return fetch(`${this._baseUrl}/${this._cohortId}/cards/likes/${id}`, {
          method: 'DELETE',
-         headers: this._infoForFetch.headers
+         headers: this._headers
       })
       .then(this._checkResponse)
    }
 
-   makeRequestChangeAvatar(avatar) {
-      return fetch(`${this._infoForFetch.baseUrl}/${this._infoForFetch.cohortId}/users/me/avatar`, {
+   changeAvatar(avatar) {
+      return fetch(`${this._baseUrl}/${this._cohortId}/users/me/avatar`, {
          method: 'PATCH',
-         headers:this._infoForFetch.headers,
+         headers:this._headers,
          body: JSON.stringify({
             avatar
          })
       })
       .then(this._checkResponse)
    }
-
 }
 
